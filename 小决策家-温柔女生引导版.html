@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>小决策家 · 温柔版</title>
+<style>
+:root{
+  --bg1:#f7f2e8; --bg2:#eef6ef; --card:rgba(255,253,247,.72);
+  --ink:#2d3a33; --muted:#78827a; --line:rgba(224,214,194,.7);
+  --green:#b7d4b9; --green2:#e4f1e4; --blue:#dcecf2; --gold:#f0dfb1;
+  --pink:#f2dde2; --shadow:0 18px 50px rgba(86,76,54,.11);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0; min-height:100vh; color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:
+    radial-gradient(circle at 15% 5%, rgba(210,235,211,.9), transparent 34%),
+    radial-gradient(circle at 85% 15%, rgba(219,236,242,.9), transparent 30%),
+    radial-gradient(circle at 50% 95%, rgba(245,224,183,.75), transparent 34%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  padding:18px;
+}
+.app{max-width:560px;margin:0 auto;padding-bottom:36px}
+.glass{
+  background:var(--card); border:1px solid var(--line); border-radius:28px;
+  box-shadow:var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+.header{text-align:center;padding:28px 12px 18px}
+.logo{font-size:42px;filter:drop-shadow(0 8px 14px rgba(120,150,120,.25))}
+h1{margin:8px 0 4px;font-size:31px;letter-spacing:.08em}
+h2{margin:6px 0 14px;font-size:22px}
+.subtitle{color:var(--muted);font-size:15px;line-height:1.8}
+.card{padding:18px;margin:14px 0}
+.hidden{display:none!important}
+.btn{
+  width:100%; border:0; border-radius:20px; padding:16px 18px; margin:9px 0;
+  font-size:17px; color:var(--ink); background:rgba(255,255,255,.55);
+  box-shadow:0 8px 18px rgba(75,95,75,.08);
+}
+.btn:active{transform:scale(.985)}
+.primary{background:linear-gradient(135deg,var(--green),#edf6e9)}
+.blue{background:linear-gradient(135deg,var(--blue),#f4fbfd)}
+.gold{background:linear-gradient(135deg,var(--gold),#fff3c8)}
+.pink{background:linear-gradient(135deg,var(--pink),#fff0f2)}
+.ghost{background:rgba(255,255,255,.45);border:1px solid var(--line);box-shadow:none}
+.small{width:auto;padding:9px 13px;font-size:14px;margin:5px;border-radius:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input,textarea,select{
+  width:100%; border:1px solid var(--line); border-radius:18px; padding:13px;
+  background:rgba(255,255,255,.72); color:var(--ink); font-size:16px; outline:none;
+}
+textarea{min-height:72px;resize:vertical}
+label{display:block;font-size:14px;color:var(--muted);margin:12px 0 6px}
+.optionBox{padding:13px;border:1px solid var(--line);border-radius:20px;margin:10px 0;background:rgba(255,255,255,.45)}
+.result{
+  font-size:25px;text-align:center;padding:20px;border-radius:24px;background:rgba(242,231,204,.85);
+  margin:12px 0;font-weight:750;line-height:1.55;
+}
+.tip,.aiBox{
+  font-size:15px;color:var(--muted);line-height:1.8;background:rgba(255,250,240,.72);
+  border-radius:18px;padding:13px;margin:10px 0;border:1px solid rgba(236,227,207,.6)
+}
+.aiBox{color:#455249;background:rgba(237,247,237,.75)}
+.scoreline{display:grid;grid-template-columns:1fr 84px;gap:8px;align-items:center;margin:8px 0}
+.badge{display:inline-block;background:rgba(240,225,183,.8);border-radius:999px;padding:5px 10px;margin:4px;font-size:13px}
+.record{border-top:1px solid var(--line);padding:12px 0;font-size:14px;line-height:1.75}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
+.player{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{border-radius:999px;padding:8px 11px;background:rgba(255,255,255,.48);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.range{accent-color:#9fbea4}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">🌱</div>
+    <h1>小决策家</h1>
+    <div class="subtitle">温柔女生引导 · 白噪音陪伴 · 情绪判断AI<br>当你拿不定主意时，先让心安静一点。</div>
+  </div>
+
+  <div id="home" class="card glass">
+    <button class="btn primary" onclick="startGuide();show('quick')">🎲 快速选择</button>
+    <button class="btn blue" onclick="startGuide();show('score')">🧠 理由打分</button>
+    <button class="btn pink" onclick="show('emotion')">💗 情绪判断AI</button>
+    <button class="btn gold" onclick="showRecords()">📒 我的决策记录</button>
+    <div class="tip">第一次点击声音按钮时，手机可能会请求允许播放声音。建议用 Safari 打开，并添加到主屏幕，就像小 App 一样使用。</div>
+  </div>
+
+  <div class="card glass">
+    <h2>🎧 声音陪伴</h2>
+    <div class="player">
+      <button class="btn small primary" onclick="speakGuide()">温柔女生引导</button>
+      <button class="btn small blue" onclick="toggleNoise('rain')">雨声</button>
+      <button class="btn small blue" onclick="toggleNoise('water')">流水</button>
+      <button class="btn small blue" onclick="toggleNoise('birds')">鸟鸣</button>
+      <button class="btn small ghost" onclick="stopAllSound()">停止声音</button>
+    </div>
+    <label>白噪音音量</label>
+    <input class="range" id="volume" type="range" min="0" max="0.5" step="0.01" value="0.16" oninput="setVolume()">
+    <div id="soundStatus" class="pill">声音未开启</div>
+  </div>
+
+  <div id="quick" class="card glass hidden">
+    <button class="btn small ghost" onclick="show('home')">← 返回</button>
+    <h2>🎲 快速选择</h2>
+    <label>我现在在纠结什么？</label>
+    <input id="qQuestion" placeholder="例如：先写英语还是先练琴？">
+    <label>选项</label>
+    <div id="qOptions"></div>
+    <button class="btn ghost" onclick="addQuickOption()">＋ 添加选项</button>
+    <button class="btn primary" onclick="quickPick()">帮我选一个</button>
+    <div id="qResult" class="hidden">
+      <div class="result" id="qChoice"></div>
+      <div class="aiBox" id="qAi"></div>
+      <div class="row">
+        <button class="btn small primary" onclick="saveQuick('接受')">✅ 我接受</button>
+        <button class="btn small ghost" onclick="quickPick()">🔁 换一个</button>
+      </div>
+      <div id="qFeeling"></div>
+    </div>
+  </div>
+
+  <div id="score" class="card glass hidden">
+    <button class="btn small ghost" onclick="show('home')">← 返回</button>
+    <h2>🧠 理由打分</h2>
+    <label>这个决定是什么？</label>
+    <input id="sQuestion" placeholder="例如：周末先做哪件事？">
+    <div id="sOptions"></div>
+    <button class="btn ghost" onclick="addScoreOption()">＋ 添加选项</button>
+    <button class="btn primary" onclick="scoreDecision()">开始分析</button>
+    <div id="sResult" class="hidden"></div>
+  </div>
+
+  <div id="emotion" class="card glass hidden">
+    <button class="btn small ghost" onclick="show('home')">← 返回</button>
+    <h2>💗 情绪判断AI</h2>
+    <label>现在想到这个决定，身体/心里的感觉是什么？</label>
+    <textarea id="emoText" placeholder="例如：有点紧张，但也觉得如果先做英语会安心一点。"></textarea>
+    <button class="btn pink" onclick="emotionAI()">分析我的情绪</button>
+    <div id="emoResult" class="aiBox hidden"></div>
+  </div>
+
+  <div id="records" class="card glass hidden">
+    <button class="btn small ghost" onclick="show('home')">← 返回</button>
+    <h2>📒 我的决策记录</h2>
+    <div id="recordList"></div>
+    <button class="btn ghost" onclick="clearRecords()">清空记录</button>
+  </div>
+
+  <div class="footer">做决定不是为了百分百正确，而是为了让自己开始行动。</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let audioCtx, noiseNodes={}, currentFeeling='';
+
+function show(id){
+  ['home','quick','score','emotion','records'].forEach(x=>$(x).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+}
+function initAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+}
+function setVolume(){
+  Object.values(noiseNodes).forEach(n=>{ if(n.gain) n.gain.gain.value = Number($('volume').value); });
+}
+function makeNoise(type){
+  initAudio();
+  const gain = audioCtx.createGain(); gain.gain.value = Number($('volume').value);
+  const filter = audioCtx.createBiquadFilter();
+  filter.frequency.value = type==='birds' ? 1800 : type==='water' ? 650 : 900;
+  filter.type = type==='rain' ? 'highpass' : 'bandpass';
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (type==='birds' && i%9000<90 ? 1 : .45);
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer; source.loop = true;
+  source.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+  source.start();
+  return {source,gain};
+}
+function toggleNoise(type){
+  initAudio();
+  if(noiseNodes[type]){
+    noiseNodes[type].source.stop(); delete noiseNodes[type];
+  }else{
+    noiseNodes[type]=makeNoise(type);
+  }
+  $('soundStatus').innerText = Object.keys(noiseNodes).length ? '正在播放：'+Object.keys(noiseNodes).join('、') : '声音未开启';
+}
+function stopAllSound(){
+  Object.values(noiseNodes).forEach(n=>n.source.stop());
+  noiseNodes={}; window.speechSynthesis.cancel(); $('soundStatus').innerText='声音已停止';
+}
+function speakGuide(){
+  const text='先慢慢呼吸一下。你不用马上找到完美答案。现在只要把几个选项放在这里，让心安静一点，再轻轻地往前走一步。';
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN'; u.rate=.86; u.pitch=1.18; u.volume=.9;
+  const voices = speechSynthesis.getVoices();
+  const female = voices.find(v=>/Ting|Mei|Xiaoxiao|female|普通话|Mandarin|Chinese/i.test(v.name+v.lang));
+  if(female) u.voice=female;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+function startGuide(){ setTimeout(speakGuide,250); }
+
+function addQuickOption(v=''){
+  const box=document.createElement('div'); box.className='optionBox';
+  box.innerHTML='<input placeholder="写一个选项" value="'+v.replaceAll('"','&quot;')+'">';
+  $('qOptions').appendChild(box);
+}
+function addScoreOption(v=''){
+  const idx=$('sOptions').children.length+1;
+  const box=document.createElement('div'); box.className='optionBox';
+  box.innerHTML=`<label>选项 ${idx}</label><input class="sName" placeholder="写一个选项" value="${v}">
+  <div class="scoreline"><textarea class="reason" placeholder="理由1"></textarea><select class="pts"><option value="1">1分</option><option value="2">2分</option><option value="3">3分⭐</option></select></div>
+  <div class="scoreline"><textarea class="reason" placeholder="理由2"></textarea><select class="pts"><option value="1">1分</option><option value="2">2分</option><option value="3">3分⭐</option></select></div>
+  <div class="scoreline"><textarea class="reason" placeholder="理由3"></textarea><select class="pts"><option value="1">1分</option><option value="2">2分</option><option value="3">3分⭐</option></select></div>`;
+  $('sOptions').appendChild(box);
+}
+function emotionJudge(text){
+  const t=text||'';
+  let score=0, tags=[];
+  if(/紧张|害怕|担心|怕|焦虑|烦|乱|压力/.test(t)){score-=2;tags.push('有紧张感');}
+  if(/舒服|安心|轻松|愿意|期待|开心|清楚/.test(t)){score+=2;tags.push('身体比较同意');}
+  if(/应该|必须|别人|妈妈|爸爸|老师/.test(t)){score-=1;tags.push('可能有外部压力');}
+  if(/想|喜欢|好奇|可以试试|愿意/.test(t)){score+=1;tags.push('有内在动力');}
+  let advice = score>=2 ? '这像是一个比较顺心的方向，可以先做一个很小的行动。' :
+               score<=-2 ? '这里面可能有压力或抗拒，不要急着决定，先把“我真正担心什么”写出来。' :
+               '你还在中间地带，可以用理由打分，或者先试做10分钟再决定。';
+  return {tags:tags.length?tags:['情绪还不明显'], advice};
+}
+function quickPick(){
+  const ops=[...$('qOptions').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);
+  if(ops.length<2){alert('至少写两个选项哦。');return}
+  const choice=ops[Math.floor(Math.random()*ops.length)];
+  $('qChoice').innerText='小决策家建议你：\n' + choice;
+  $('qResult').classList.remove('hidden');
+  $('qAi').innerHTML='🌿 温柔提醒：看到这个答案的第一反应很重要。如果心里松了一下，说明它可能可行；如果明显抗拒，说明你心里还有更真实的理由。';
+  $('qFeeling').innerHTML=feelingButtons();
+  speakText('小决策家给出了一个选择。请先感受一下，你的身体是放松，还是抗拒。');
+}
+function speakText(text){
+  const u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; u.rate=.88; u.pitch=1.15;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+function feelingButtons(){
+  return `<label>看到这个决定，你的感觉是？</label>
+  <div class="row">
+  <button class="btn small" onclick="setFeeling('🙂 很舒服')">🙂 很舒服</button>
+  <button class="btn small" onclick="setFeeling('😐 还可以')">😐 还可以</button>
+  <button class="btn small" onclick="setFeeling('😟 不太舒服')">😟 不太舒服</button>
+  </div><div id="feelTip" class="tip hidden"></div>`;
+}
+function setFeeling(f){
+  currentFeeling=f;
+  const t=$('feelTip'); if(!t) return; t.classList.remove('hidden');
+  t.innerText = f.includes('不太舒服') ? '你的感觉在提醒你：先别责怪自己，可以重新看看理由，或者换一个更小的行动。' : '很好，把决定变成一个小行动吧。';
+}
+function scoreDecision(){
+  const boxes=[...$('sOptions').children];
+  if(boxes.length<2){alert('至少写两个选项哦。');return}
+  let results=[];
+  boxes.forEach(box=>{
+    const name=box.querySelector('.sName').value.trim();
+    const reasons=[...box.querySelectorAll('.reason')];
+    const pts=[...box.querySelectorAll('.pts')];
+    let score=0,count=0,strong=false,detail=[];
+    reasons.forEach((r,i)=>{
+      if(r.value.trim()){ const p=Number(pts[i].value); score+=p; count++; if(p===3) strong=true; detail.push(`${r.value.trim()}（${p}分）`); }
+    });
+    if(name) results.push({name,score,count,strong,detail});
+  });
+  if(results.length<2){alert('至少写两个完整选项。');return}
+  results.sort((a,b)=>b.score-a.score);
+  const best=results[0], close=results[1] && best.score-results[1].score<=1;
+  let html=`<h3>🧠 小决策家分析</h3><div class="result">优先选择：<br>${best.name}</div>`;
+  html+=`<div><span class="badge">总分 ${best.score}</span><span class="badge">理由 ${best.count} 条</span>${best.strong?'<span class="badge">有强理由⭐</span>':''}</div>`;
+  html+=`<div class="aiBox">AI温柔判断：${close?'两个选择分数很接近，不必追求完美。建议选“更容易开始”的那个。':'这个选择理由更集中，可以先行动，再观察结果。'}</div>`;
+  results.forEach(r=>{html+=`<div class="record"><b>${r.name}</b>：${r.score}分 ${r.strong?'⭐':''}<br>${r.detail.join('<br>')}</div>`});
+  html+=feelingButtons();
+  html+=`<button class="btn primary" onclick="saveScore()">保存这次决定</button>`;
+  $('sResult').innerHTML=html; $('sResult').classList.remove('hidden');
+  window.lastScore={question:$('sQuestion').value,choice:best.name,results};
+  speakText('分析完成。请记住，分数只是帮助你看清楚，不是命令你必须这样做。');
+}
+function emotionAI(){
+  const text=$('emoText').value.trim();
+  if(!text){alert('先写一点你的感觉哦。');return}
+  const r=emotionJudge(text);
+  $('emoResult').classList.remove('hidden');
+  $('emoResult').innerHTML=`<b>情绪标签：</b>${r.tags.map(x=>' <span class="badge">'+x+'</span>').join('')}<br><br><b>温柔建议：</b>${r.advice}`;
+  speakText(r.advice);
+}
+function saveRecord(obj){
+  const arr=JSON.parse(localStorage.getItem('decisionRecords')||'[]');
+  arr.unshift({...obj,date:new Date().toLocaleString()});
+  localStorage.setItem('decisionRecords',JSON.stringify(arr.slice(0,80)));
+  alert('已经保存到决策记录。');
+}
+function saveQuick(note){
+  const choice=$('qChoice').innerText.replace('小决策家建议你：\n','');
+  saveRecord({type:'快速选择',question:$('qQuestion').value,choice,feeling:currentFeeling,note});
+}
+function saveScore(){ saveRecord({type:'理由打分',question:window.lastScore.question,choice:window.lastScore.choice,feeling:currentFeeling,note:'系统推荐'}); }
+function showRecords(){
+  show('records');
+  const arr=JSON.parse(localStorage.getItem('decisionRecords')||'[]');
+  $('recordList').innerHTML= arr.length ? arr.map(r=>`<div class="record"><b>${r.type}</b>｜${r.date}<br>问题：${r.question||'未填写'}<br>选择：${r.choice}<br>感觉：${r.feeling||'未记录'}</div>`).join('') : '<div class="tip">还没有记录。做完一次决定后，可以保存到这里。</div>';
+}
+function clearRecords(){ if(confirm('确定清空所有记录吗？')){localStorage.removeItem('decisionRecords');showRecords();} }
+
+addQuickOption(''); addQuickOption('');
+addScoreOption(''); addScoreOption('');
+</script>
+</body>
+</html>
